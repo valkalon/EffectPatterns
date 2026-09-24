@@ -25,32 +25,32 @@ Configuration files often have optional fields where users can omit them and use
 
 ```typescript
 import { Schema, Effect } from "effect";
-import { FileSystem } from "@effect/platform";
+import { FileSystem } from "effect";
 import { NodeFileSystem } from "@effect/platform-node";
 
 // 1. Define schema with default values using pipe
 const ServerConfig = Schema.Struct({
   // Required fields
-  host: Schema.String.pipe(Schema.minLength(1)),
-  port: Schema.Number.pipe(Schema.int(), Schema.between(1, 65535)),
+  host: Schema.String.pipe(Schema.check(Schema.isMinLength(1))),
+  port: Schema.Number.pipe(Schema.check(Schema.isInt()), Schema.check(Schema.isBetween(1, 65535))),
 
   // Optional fields with defaults applied at parse time
   timeout: Schema.Number.pipe(
-    Schema.int(),
-    Schema.positive(),
+    Schema.check(Schema.isInt()),
+    Schema.check(Schema.isGreaterThan(0)),
     Schema.optionalWith({ default: () => 5000 }) // 5 second default
   ),
   maxRetries: Schema.Number.pipe(
-    Schema.int(),
-    Schema.between(0, 10),
+    Schema.check(Schema.isInt()),
+    Schema.check(Schema.isBetween(0, 10)),
     Schema.optionalWith({ default: () => 3 })
   ),
   enableSSL: Schema.Boolean.pipe(
     Schema.optionalWith({ default: () => false })
   ),
   compressionLevel: Schema.Number.pipe(
-    Schema.int(),
-    Schema.between(0, 9),
+    Schema.check(Schema.isInt()),
+    Schema.check(Schema.isBetween(0, 9)),
     Schema.optionalWith({ default: () => 6 }) // Mid-range compression
   ),
 });
@@ -80,7 +80,7 @@ const loadServerConfig = (filePath: string) =>
     }
 
     // Decode with defaults applied automatically
-    const config = yield* Schema.decodeUnknown(ServerConfig)(
+    const config = yield* Schema.decodeUnknownEffect(ServerConfig)(
       jsonData
     ).pipe(
       Effect.mapError((error) => ({

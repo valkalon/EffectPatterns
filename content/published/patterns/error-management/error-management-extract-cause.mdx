@@ -24,7 +24,7 @@ lessonOrder: 4
 
 ## Guideline
 
-When you catch with `Effect.catchAllCause`, use `Cause.failures(cause)` to get expected typed errors and `Cause.defects(cause)` to get unexpected defects. Handle them differently: recover or retry failures; log and escalate defects.
+When you catch with `Effect.catchCause`, use `Cause.failures(cause)` to get expected typed errors and `Cause.defects(cause)` to get unexpected defects. Handle them differently: recover or retry failures; log and escalate defects.
 
 ## Rationale
 
@@ -36,7 +36,7 @@ Failures are part of your domain model (e.g., `UserNotFound`, `ValidationError`)
 import { Effect, Cause } from "effect"
 
 const program = Effect.die("unexpected bug").pipe(
-  Effect.catchAllCause((cause) =>
+  Effect.catchCause((cause) =>
     Effect.gen(function* () {
       const defects = Cause.defects(cause)
       const failures = Cause.failures(cause)
@@ -56,4 +56,4 @@ Effect.runPromise(program)
 
 ## Anti-Pattern
 
-Treating all errors the same, or using `Effect.catchAll` (without Cause) and losing the ability to distinguish failures from defects.
+Treating all errors the same, or using `Effect.catch` (without Cause) and losing the ability to distinguish failures from defects.

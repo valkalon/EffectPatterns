@@ -67,7 +67,7 @@ console.log(`✅ ${full.name}, ${full.age} years old`)
 const DatabaseRecord = Schema.Struct({
   id: Schema.String,
   // Field exists but value may be null
-  deletedAt: Schema.NullOr(Schema.Date),
+  deletedAt: Schema.NullOr(Schema.DateFromString),
   parentId: Schema.NullOr(Schema.String),
 })
 

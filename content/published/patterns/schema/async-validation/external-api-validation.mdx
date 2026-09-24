@@ -95,7 +95,7 @@ const ValidCreditCard = Schema.String.pipe(
 )
 
 const ValidShippingAddress = Schema.String.pipe(
-  Schema.minLength(10),
+  Schema.check(Schema.isMinLength(10)),
   Schema.filterEffect((address) =>
     Effect.gen(function* () {
       const isValid = yield* Effect.tryPromise({
@@ -142,7 +142,7 @@ const SafeIPAddress = Schema.String.pipe(
 
 const PaymentForm = Schema.Struct({
   cardNumber: ValidCreditCard,
-  amount: Schema.Number.pipe(Schema.greaterThan(0)),
+  amount: Schema.Number.pipe(Schema.check(Schema.isGreaterThan(0))),
   shippingAddress: ValidShippingAddress,
 })
 
@@ -168,7 +168,7 @@ const appLogic = Effect.gen(function* () {
   }
 
   const payment = yield* Effect.tryPromise({
-    try: () => Schema.decodeUnknown(PaymentForm)(validPayment),
+    try: () => Schema.decodeUnknownEffect(PaymentForm)(validPayment),
     catch: (e) => new Error(String(e)),
   })
 
@@ -186,12 +186,12 @@ const appLogic = Effect.gen(function* () {
   }
 
   const payment2 = yield* Effect.tryPromise({
-    try: () => Schema.decodeUnknown(PaymentForm)(invalidCard),
+    try: () => Schema.decodeUnknownEffect(PaymentForm)(invalidCard),
     catch: (e) => new Error(String(e)),
-  }).pipe(Effect.either)
+  }).pipe(Effect.result)
 
-  if (payment2._tag === "Left") {
-    console.log(`✗ Error: ${payment2.left.message}`)
+  if (payment2._tag === "Failure") {
+    console.log(`✗ Error: ${payment2.failure.message}`)
   }
 
   console.log("\n3. Valid login (safe IP):\n")
@@ -203,7 +203,7 @@ const appLogic = Effect.gen(function* () {
   }
 
   const login = yield* Effect.tryPromise({
-    try: () => Schema.decodeUnknown(LoginForm)(validLogin),
+    try: () => Schema.decodeUnknownEffect(LoginForm)(validLogin),
     catch: (e) => new Error(String(e)),
   })
 
@@ -220,12 +220,12 @@ const appLogic = Effect.gen(function* () {
   }
 
   const login2 = yield* Effect.tryPromise({
-    try: () => Schema.decodeUnknown(LoginForm)(suspiciousLogin),
+    try: () => Schema.decodeUnknownEffect(LoginForm)(suspiciousLogin),
     catch: (e) => new Error(String(e)),
-  }).pipe(Effect.either)
+  }).pipe(Effect.result)
 
-  if (login2._tag === "Left") {
-    console.log(`✗ Error: ${login2.left.message}`)
+  if (login2._tag === "Failure") {
+    console.log(`✗ Error: ${login2.failure.message}`)
   }
 
   return { payment, login }

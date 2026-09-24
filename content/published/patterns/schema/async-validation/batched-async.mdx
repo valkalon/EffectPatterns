@@ -111,7 +111,7 @@ const cache = new ValidationCache()
 const service = new BatchValidationService()
 
 const BatchValidatedUsername = Schema.String.pipe(
-  Schema.minLength(3),
+  Schema.check(Schema.isMinLength(3)),
   Schema.filterEffect((username) =>
     Effect.gen(function* () {
       const isValid = yield* Effect.tryPromise({
@@ -131,7 +131,7 @@ const BatchValidatedUsername = Schema.String.pipe(
 )
 
 const BatchValidatedEmail = Schema.String.pipe(
-  Schema.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/),
+  Schema.check(Schema.isPattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)),
   Schema.filterEffect((email) =>
     Effect.gen(function* () {
       const isValid = yield* Effect.tryPromise({
@@ -186,16 +186,16 @@ const appLogic = Effect.gen(function* () {
   console.log("\nValidating...")
 
   const result = yield* Effect.tryPromise({
-    try: () => Schema.decodeUnknown(BulkUserData)(users),
+    try: () => Schema.decodeUnknownEffect(BulkUserData)(users),
     catch: (e) => new Error(String(e)),
-  }).pipe(Effect.either)
+  }).pipe(Effect.result)
 
-  if (result._tag === "Left") {
-    console.log(`\n✗ Validation failed: ${result.left.message}`)
+  if (result._tag === "Failure") {
+    console.log(`\n✗ Validation failed: ${result.failure.message}`)
     console.log("Note: Thanks to batching + cache, duplicates only validated once")
   } else {
     console.log("\n✓ All users validated")
-    for (const user of result.right) {
+    for (const user of result.success) {
       console.log(`  - ${user.username}: OK`)
     }
   }
