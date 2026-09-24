@@ -39,7 +39,7 @@ Effect DevTools help you:
 ### 1. Enable Debug Mode
 
 ```typescript
-import { Effect, Logger, LogLevel, FiberRef, Cause } from "effect"
+import { Effect, Logger, LogLevel, References, Cause } from "effect"
 
 // ============================================
 // 1. Verbose logging for development
@@ -124,9 +124,9 @@ const debugErrors = Effect.gen(function* () {
         yield* Effect.log(`Is failure: ${Cause.hasFails(cause)}`)
         yield* Effect.log(`Is interrupted: ${Cause.hasInterrupts(cause)}`)
 
-        // Extract all failures
-        const failures = Cause.failures(cause)
-        yield* Effect.log(`Failures: ${JSON.stringify([...failures])}`)
+        // Extract all failures (v4: Cause is a flat reasons array)
+        const failures = cause.reasons.filter(Cause.isFailReason).map((r) => r.error)
+        yield* Effect.log(`Failures: ${JSON.stringify(failures)}`)
 
         return "recovered"
       })
@@ -176,13 +176,14 @@ const withDevLogger = <A, E, R>(effect: Effect.Effect<A, E, R>) =>
 // ============================================
 
 const showRuntimeMetrics = Effect.gen(function* () {
-  const runtime = yield* Effect.runtime()
+  const services = yield* Effect.context<never>()
 
   yield* Effect.log("=== Runtime Info ===")
-  // Access runtime configuration
-  const fiberRefs = runtime.fiberRefs
-
-  yield* Effect.log("FiberRefs available")
+  // v4: FiberRef / Runtime<R> removed. Fiber-local state lives in Context.Reference.
+  // Read built-in references directly, e.g. `yield* References.CurrentLogLevel`.
+  const level = yield* References.CurrentLogLevel
+  yield* Effect.log(`Current log level: ${level.label}`)
+  void services
 })
 
 // ============================================

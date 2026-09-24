@@ -57,7 +57,7 @@ const UserProfileV3 = Schema.Struct({
   createdAt: Schema.String,
   updatedAt: Schema.String.pipe(Schema.optional),
   schemaVersion: Schema.Literals(["v1", "v2", "v3"]).pipe(
-    Schema.optionalWith({ default: () => "v3" })
+    Schema.withDecodingDefaultKey(Effect.succeed("v3"))
   ),
 });
 

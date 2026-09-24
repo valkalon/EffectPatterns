@@ -116,12 +116,15 @@ const parseAsync = Schema.decodeUnknownEffect(User)
 // 3. DEFECTS VS ERRORS: Schema distinguishes recoverable vs non-recoverable
 // ParseError is typed and trackable through Effect's error channel
 
-// 4. ASYNC VALIDATION: Built-in support
+// 4. ASYNC VALIDATION: compose sync decode + async Effect checks
+import { SchemaGetter } from "effect"
 const UsernameAvailable = Schema.String.pipe(
-  Schema.filterEffect((username) =>
-    // Check database asynchronously
-    Effect.succeed(true)  // Placeholder
-  )
+  Schema.decodeTo(Schema.String, {
+    decode: SchemaGetter.transformEffect((username) =>
+      // Check database asynchronously
+      Effect.succeed(username)
+    )
+  })
 )
 
 console.log("✅ Effect Schema and Zod both validate at runtime")

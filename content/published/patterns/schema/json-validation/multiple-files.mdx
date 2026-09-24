@@ -46,7 +46,7 @@ const ApiConfig = Schema.Struct({
   timeout: Schema.Number.pipe(
     Schema.check(Schema.isInt()),
     Schema.check(Schema.isGreaterThan(0)),
-    Schema.optionalWith({ default: () => 5000 })
+    Schema.withDecodingDefaultKey(Effect.succeed(5000))
   ),
 });
 
@@ -54,13 +54,13 @@ type ApiConfig = typeof ApiConfig.Type;
 
 const FeatureFlags = Schema.Struct({
   enableNewUI: Schema.Boolean.pipe(
-    Schema.optionalWith({ default: () => false })
+    Schema.withDecodingDefaultKey(Effect.succeed(false))
   ),
   enableAnalytics: Schema.Boolean.pipe(
-    Schema.optionalWith({ default: () => true })
+    Schema.withDecodingDefaultKey(Effect.succeed(true))
   ),
   maintenanceMode: Schema.Boolean.pipe(
-    Schema.optionalWith({ default: () => false })
+    Schema.withDecodingDefaultKey(Effect.succeed(false))
   ),
 });
 

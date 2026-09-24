@@ -38,20 +38,20 @@ const ServerConfig = Schema.Struct({
   timeout: Schema.Number.pipe(
     Schema.check(Schema.isInt()),
     Schema.check(Schema.isGreaterThan(0)),
-    Schema.optionalWith({ default: () => 5000 }) // 5 second default
+    Schema.withDecodingDefaultKey(Effect.succeed(5000)) // 5 second default
   ),
   maxRetries: Schema.Number.pipe(
     Schema.check(Schema.isInt()),
     Schema.check(Schema.isBetween(0, 10)),
-    Schema.optionalWith({ default: () => 3 })
+    Schema.withDecodingDefaultKey(Effect.succeed(3))
   ),
   enableSSL: Schema.Boolean.pipe(
-    Schema.optionalWith({ default: () => false })
+    Schema.withDecodingDefaultKey(Effect.succeed(false))
   ),
   compressionLevel: Schema.Number.pipe(
     Schema.check(Schema.isInt()),
     Schema.check(Schema.isBetween(0, 9)),
-    Schema.optionalWith({ default: () => 6 }) // Mid-range compression
+    Schema.withDecodingDefaultKey(Effect.succeed(6)) // Mid-range compression
   ),
 });
 
@@ -161,7 +161,7 @@ Effect.runPromise(
 
 | Concept | Explanation |
 |---------|-------------|
-| `Schema.optionalWith({ default: () => value })` | Applies default when field is missing |
+| `Schema.withDecodingDefaultKey(Effect.succeed(value))` | Applies default when field is missing |
 | Default factory function `() => value` | Computed at parse time (not shared mutable state) |
 | Type becomes non-optional | TypeScript knows field always exists |
 | Eliminates null/undefined checks | Config properties guaranteed to exist |

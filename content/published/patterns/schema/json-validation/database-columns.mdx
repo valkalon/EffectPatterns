@@ -29,13 +29,13 @@ import { Schema, Effect } from "effect";
 // 1. Define schema for database JSON column
 const UserMetadata = Schema.Struct({
   theme: Schema.Literals(["light", "dark", "auto"]).pipe(
-    Schema.optionalWith({ default: () => "auto" })
+    Schema.withDecodingDefaultKey(Effect.succeed("auto"))
   ),
   notifications: Schema.Boolean.pipe(
-    Schema.optionalWith({ default: () => true })
+    Schema.withDecodingDefaultKey(Effect.succeed(true))
   ),
   language: Schema.Literals(["en", "es", "fr", "de"]).pipe(
-    Schema.optionalWith({ default: () => "en" })
+    Schema.withDecodingDefaultKey(Effect.succeed("en"))
   ),
   lastLogin: Schema.String.pipe(
     Schema.check(Schema.isPattern(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/))
@@ -150,7 +150,7 @@ const validateMultipleMetadata = (userIds: string[]) =>
 | Schema as contract | Define shape of JSON before retrieving from DB |
 | `Schema.decodeUnknownEffect()` | Convert untyped database JSON to typed data |
 | Error channel | Validation failures don't throw; flow through Effect |
-| Defaults via `optionalWith` | Apply missing-field defaults at parse time |
+| Defaults via `withDecodingDefaultKey` | Apply missing-field defaults at parse time |
 | Type-safe after validation | TypeScript knows validated data matches schema |
 | Immediate validation | Catch bad data at DB boundary, not downstream |
 | Composable schemas | Nested structures validated automatically |

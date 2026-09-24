@@ -59,7 +59,7 @@ const OrderMetadata = Schema.Struct({
 
   // Metadata with defaults
   source: Schema.Literals(["web", "mobile", "api"]).pipe(
-    Schema.optionalWith({ default: () => "web" })
+    Schema.withDecodingDefaultKey(Effect.succeed("web"))
   ),
   notes: Schema.String.pipe(Schema.optional),
 });

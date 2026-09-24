@@ -25,7 +25,7 @@ lessonOrder: 1
 
 ## Guideline
 
-When you need to perform multiple validation checks and collect all failures, use the `Result<E, A>` data type. `Result` represents a value that can be one of two possibilities: a `Left<E>` (typically for failure) or a `Right<A>` (typically for success).
+When you need to perform multiple validation checks and collect all failures, use the `Result<E, A>` data type. `Result` represents a value that can be one of two possibilities: a `Failure<E>` (typically for failure) or a `Success<A>` (typically for success).
 
 ---
 
@@ -35,7 +35,7 @@ The `Effect` error channel is designed to short-circuit. The moment an `Effect` 
 
 However, for tasks like validating a user's input, this is poor user experience. You want to show the user all of their mistakes at once.
 
-`Result` is the solution. Since it's a pure data structure, you can run multiple checks that each return an `Result`, and then combine the results to accumulate all the `Left` (error) values. The `Effect/Schema` module uses this pattern internally to provide powerful error accumulation.
+`Result` is the solution. Since it's a pure data structure, you can run multiple checks that each return a `Result`, and then combine the results to accumulate all the `Failure` (error) values. The `Effect/Schema` module uses this pattern internally to provide powerful error accumulation.
 
 ---
 

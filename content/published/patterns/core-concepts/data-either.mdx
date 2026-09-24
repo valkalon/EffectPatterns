@@ -27,7 +27,7 @@ lessonOrder: 1
 
 ## Guideline
 
-Use the `Result<E, A>` data type to represent computations that can fail (`Left<E>`) or succeed (`Right<A>`).  
+Use the `Result<E, A>` data type to represent computations that can fail (`Failure<E>`) or succeed (`Success<A>`).  
 This makes error handling explicit, type-safe, and composable.
 
 ## Rationale
@@ -40,7 +40,7 @@ It allows you to accumulate errors, model domain-specific failures, and avoid ex
 ```typescript
 import { Result } from "effect";
 
-// Create a Right (success) or Left (failure)
+// Create a Success or Failure
 const success = Result.succeed(42); // Result<number, never>
 const failure = Result.fail("Something went wrong"); // Result<never, string>
 

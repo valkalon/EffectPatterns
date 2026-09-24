@@ -25,7 +25,7 @@ lessonOrder: 3
 
 ## Guideline
 
-When you need to handle `Option` or `Result` values, use the `.match()` combinator instead of imperative checks. The `.match()` method provides a declarative, exhaustive way to handle all cases (Some/None for Option, Right/Left for Result) in a single expression.
+When you need to handle `Option` or `Result` values, use the `.match()` combinator instead of imperative checks. The `.match()` method provides a declarative, exhaustive way to handle all cases (Some/None for Option, Success/Failure for Result) in a single expression.
 
 Use `.match()` when:
 - You need to handle both success and failure cases
